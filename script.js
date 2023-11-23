@@ -80,10 +80,9 @@ function Player(defaultName, symbol) {
 }
 
 /*
- * Handles the game logic
- * TODO: Concert to IIDE
+ * IIDE game logic handler
  */
-function GameHandler() {
+const ticTacToe = (function() {
     const playerOne = Player("Player1", 1);
     const playerTwo = Player("Player2", 2);
     const gameBoard = Board();
@@ -144,6 +143,7 @@ function GameHandler() {
         }
     }
 
+    // Checks if the game has ended
     function checkEnd() {
         // Winner Found
         if (checkWinner()) {
@@ -230,6 +230,4 @@ function GameHandler() {
     function switchActivePlayer() {
         activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
     }
-}
-
-const ticTacToe = GameHandler();
+})();
