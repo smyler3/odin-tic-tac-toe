@@ -163,7 +163,47 @@ function GameHandler() {
         // Check for a win
         function checkWinner() {
             // Winner Logic
-            return false;
+            let winner = null;
+            // Check rows
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                winner = true;
+                for (let j = 0; j < gameBoard.getCols(); j++) {
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
+                    }
+                }
+                if (winner) {
+                    return true;
+                }
+            }
+
+            // Check columns
+            for (let j = 0; j < gameBoard.getCols(); j++) {
+                winner = true;
+                for (let i = 0; i < gameBoard.getRows(); i++) {
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
+                    }
+                }
+                if (winner) {
+                    return true;
+                }
+            }
+
+            // Check diagonals
+            if (gameBoard.getBoard()[1][1].getValue() !== activePlayer.getSymbol()) {
+                winner = false;
+            }
+            else if (gameBoard.getBoard()[0][0].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][2].getValue() === activePlayer.getSymbol()) {
+                return true;
+            }
+            else if (gameBoard.getBoard()[0][2].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][0].getValue() === activePlayer.getSymbol()) {
+                return true;
+            }
+
+            return winner;
         }
 
         // Checks for a draw
@@ -181,7 +221,8 @@ function GameHandler() {
 
         // Prints the end of game message
         function endGameMessage(victor = null) {
-            console.log("Game Over! Result: " + ((victor === null) ? "Draw" : victor.getName));
+            console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
+            console.log(gameBoard.printBoard());
         } 
     }
 
