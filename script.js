@@ -25,11 +25,19 @@ function Board() {
         }
     }
 
+    function getRows() {
+        return rows;
+    }
+
+    function getCols() {
+        return cols;
+    }
+
     function getBoard() {
         return board;
     }
 
-    return { printBoard, getBoard };
+    return { getRows, getCols, printBoard, getBoard };
 }
 
 /*
@@ -55,21 +63,96 @@ function Cell() {
 function Player(defaultName, symbol) {
     let name = defaultName;
 
+    function setName(newName) {
+        name = newName;
+    }
+
+    function getName() {
+        return name;
+    }
+
     function getSymbol() {
         return symbol;
     }
 
-    return { name, getSymbol };
+    return { setName, getName, getSymbol };
 }
 
 /*
  * Handles the game logic
  */
 function GameHandler() {
+    const playerOne = Player("Player1", "1");
+    const playerTwo = Player("Player2", "2");
+    const gameBoard = Board();
+    let activePlayer = playerOne;
+    let moveRow = null;
+    let moveCol = null;
 
+    playRound();
+
+    // gameBoard.getBoard();
+    // gameBoard.getBoard()[0][0].setValue(playerOne);
+    // gameBoard.printBoard();
+
+    function playRound() {
+        startRoundMessage();
+        takeTurn();
+
+        // Print start round message
+        function startRoundMessage() {
+            console.log("Current Player: " + activePlayer.name);
+            gameBoard.printBoard();
+        }
+
+        function takeTurn() {
+            while (true) {
+                // Wait for input
+                let move = prompt("Please enter your move co-ords (x y): ");
+                // Extract the move information
+                [moveRow, moveCol] = move.split(" ").map(Number);
+
+                // Check move validity
+                let valid = checkMoveValid();
+                // Mark the cell
+                if (valid) {
+                    gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol);
+                    break;
+                }
+                // Request input again
+                else {
+                    console.log("Invalid Input!");
+                    continue;
+                }
+            }
+
+            // Check if the move is valid
+            function checkMoveValid() {
+                // Input is valid
+                if ((moveRow > -1) && (moveRow < gameBoard.getRows()) && (moveCol > -1) && (moveCol < gameBoard.getCols())) {
+                    // Cell is free
+                    if (gameBoard.getBoard()[moveRow][moveCol].getValue() === 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        // Check for a win
+        function checkWinner() {
+            // Winner Logic
+        }
+        // - If win: print victory and end
+        // - If draw: print draw and end
+        function endGameMessage(victor = null) {
+            console.log("Game Over! Result: " (victor === null) ? "Draw" : victor.getName);
+        } 
+        // - If no win: switch the player
+        function switchActivePlayer() {
+            activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
+        }
+    }
 }
 
-const gameBoard = Board();
-gameBoard.getBoard();
-gameBoard.getBoard()[0][0].setValue(Player("Steve", "1"));
-gameBoard.printBoard();
+const ticTacToe = GameHandler();
