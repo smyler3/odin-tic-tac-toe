@@ -46,8 +46,8 @@ function Board() {
 function Cell() {
     let value = 0;
 
-    function setValue(player) {
-        value = player.getSymbol();
+    function setValue(symbol) {
+        value = symbol;
     }
 
     function getValue() {
@@ -91,36 +91,41 @@ function GameHandler() {
 
     playRound();
 
-    // gameBoard.getBoard();
-    // gameBoard.getBoard()[0][0].setValue(playerOne);
-    // gameBoard.printBoard();
-
     function playRound() {
-        startRoundMessage();
-        takeTurn();
+        while (true) {
+            startRoundMessage();
+            takeTurn();
+            if (checkEnd()) {
+                // End the game
+                break;
+            }
+            else {
+                // Play another round
+                switchActivePlayer();
+            }
+        }
 
         // Print start round message
         function startRoundMessage() {
-            console.log("Current Player: " + activePlayer.name);
+            console.log("Current Player: " + activePlayer.getName());
             gameBoard.printBoard();
         }
 
         function takeTurn() {
+            // Accept player input, validate, and play
             while (true) {
                 // Wait for input
                 let move = prompt("Please enter your move co-ords (x y): ");
                 // Extract the move information
                 [moveRow, moveCol] = move.split(" ").map(Number);
 
-                // Check move validity
-                let valid = checkMoveValid();
-                // Mark the cell
-                if (valid) {
-                    gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol);
+                if (checkMoveValid()) {
+                    // Mark the cell
+                    gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
                     break;
                 }
-                // Request input again
                 else {
+                    // Request input again
                     console.log("Invalid Input!");
                     continue;
                 }
@@ -139,16 +144,48 @@ function GameHandler() {
             }
         }
 
-        // Check for a win
-        function checkWinner() {
-            // Winner Logic
+        function checkEnd() {
+            // Winner Found
+            if (checkWinner()) {
+                endGameMessage(activePlayer);
+                return true;
+            }
+            // Draw Found
+            else if (checkDraw()) {
+                endGameMessage();
+                return true;
+            }
+            // Game Continues
+            else {
+                return false;
+            }
+
+            // Check for a win
+            function checkWinner() {
+                // Winner Logic
+                return false;
+            }
+
+            // Checks for a draw
+            function checkDraw() {
+                // If every cell is non-zero and there are no wins, we have a draw
+                for (let i = 0; i < gameBoard.getRows(); i++) {
+                    for (let j = 0; j < gameBoard.getCols(); j++) {
+                        if (gameBoard.getBoard()[i][j].getValue()  === 0) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            // Prints the end of game message
+            function endGameMessage(victor = null) {
+                console.log("Game Over! Result: " + ((victor === null) ? "Draw" : victor.getName));
+            } 
         }
-        // - If win: print victory and end
-        // - If draw: print draw and end
-        function endGameMessage(victor = null) {
-            console.log("Game Over! Result: " (victor === null) ? "Draw" : victor.getName);
-        } 
-        // - If no win: switch the player
+
+        // Switch the active player
         function switchActivePlayer() {
             activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
         }
