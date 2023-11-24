@@ -80,6 +80,9 @@ function Player(defaultName, symbol) {
 }
 
 const ticTacToe = (function() {
+    /*
+     * IIFE factory for the object handling all display rendering logic
+     */
     const displayHandler = (function () {
         // Create the visual board object
         function createDisplay() {
@@ -107,14 +110,14 @@ const ticTacToe = (function() {
 
         // Visually mark the selected cell
         function markCell(cell) {
-            cell.textContent = gameHandler.activePlayer.getSymbol;
+            cell.textContent = gameHandler.getActivePlayer().getSymbol();
         }
 
         return { createDisplay, markCell };
     })();
 
     /*
-     * IIFE game logic handler
+     * IIFE factory for the object handling all game logic
      */
     const gameHandler = (function() {
         const playerOne = Player("Player1", 1);
@@ -127,10 +130,11 @@ const ticTacToe = (function() {
         function takeTurn(row, col) {
             moveRow = row;
             moveCol = col;
+            console.log(row, moveRow, col, moveCol);
 
             if (checkMoveValid()) {
                 // Mark the cell
-                // gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
+                gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
                 return true;
             }
             return false;
@@ -241,6 +245,12 @@ const ticTacToe = (function() {
         function switchActivePlayer() {
             activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
         }
+
+        function getActivePlayer() {
+            return activePlayer;
+        }
+
+        return { startRoundMessage, takeTurn, checkEnd, switchActivePlayer, getActivePlayer }
     })(); 
 
     // Handle all logic for starting the game
@@ -251,8 +261,7 @@ const ticTacToe = (function() {
 
     // Handle all logic for when the player selects a cell
     function makeMove(cell) {
-        if (gameHandler.takeTurn(cell.getAttribute("data-row"), cell.getAttribute("data-row"))) {
-            // cell.textContent = gameHandler.activePlayer.getSymbol;
+        if (gameHandler.takeTurn(cell.getAttribute("data-row"), cell.getAttribute("data-col"))) {
             displayHandler.markCell(cell);
             if (gameHandler.checkEnd()) {
                 // End the game
@@ -269,6 +278,8 @@ const ticTacToe = (function() {
         gameHandler.switchActivePlayer();
         gameHandler.startRoundMessage();
     }
+
+    return { startGame, makeMove }
 })(); 
 
 const startButton = (function() {
