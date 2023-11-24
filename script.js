@@ -1,5 +1,5 @@
 /*
-* Represents the gameboard being played on
+* IIFE Factory representing the gameboard being played on
 */
 const gameBoard = (function() {
     const rows = 3;
@@ -79,33 +79,51 @@ function Player(defaultName, symbol) {
     return { setName, getName, getSymbol };
 }
 
+/*
+ * IIFE factory for the object handling all ticTacToe Logic by syncing game and display function
+ */
 const ticTacToe = (function() {
     /*
      * IIFE factory for the object handling all display rendering logic
      */
     const displayHandler = (function () {
+        // Attempts to make a move on selected cell when clicked
+        const checkCell = (e) => {
+            ticTacToe.makeMove(e.target);
+        }
+
         // Create the visual board object
-        function createDisplay() {
+        function createBoard() {
             const container = document.querySelector(".container");
 
+            // Creating board
             const board = document.createElement("div");
             board.classList.add("board");
 
+            // Creating cells
             for (let i = 0; i < gameBoard.getRows(); i++) {
                 for (let j = 0; j < gameBoard.getCols(); j++) {
                     let cell = document.createElement("span");
                     cell.classList.add("cell");
                     cell.setAttribute("data-row", i);
                     cell.setAttribute("data-col", j);
-                    cell.addEventListener("click", (e) => {
-                        // TODO: Check e.target points to cell
-                        ticTacToe.makeMove(e.target);
-                    });
+                    cell.addEventListener("click", checkCell);
                     board.appendChild(cell);
                 }
             }
             
+            // Add board to top of screen
             container.prepend(board);
+        }
+
+        // Removes event listeners from all cells
+        function freezeBoard() {
+            const cells = document.querySelectorAll(".cell");
+
+            for (let cell of cells) {
+                console.log(cell);
+                cell.removeEventListener("click", checkCell);
+            }
         }
 
         // Visually mark the selected cell
@@ -113,7 +131,7 @@ const ticTacToe = (function() {
             cell.textContent = gameHandler.getActivePlayer().getSymbol();
         }
 
-        return { createDisplay, markCell };
+        return { createBoard, freezeBoard, markCell };
     })();
 
     /*
@@ -256,7 +274,7 @@ const ticTacToe = (function() {
     // Handle all logic for starting the game
     function startGame() {
         gameHandler.startRoundMessage();
-        displayHandler.createDisplay();
+        displayHandler.createBoard();
     }
 
     // Handle all logic for when the player selects a cell
@@ -265,6 +283,7 @@ const ticTacToe = (function() {
             displayHandler.markCell(cell);
             if (gameHandler.checkEnd()) {
                 // End the game
+                displayHandler.freezeBoard();
             }
             else {
                 // Play another round
@@ -282,6 +301,10 @@ const ticTacToe = (function() {
     return { startGame, makeMove }
 })(); 
 
+
+/*
+ * IIFE factory for the start game button
+ */
 const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
     startBtn.addEventListener("click", ticTacToe.startGame());
