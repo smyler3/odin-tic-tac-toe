@@ -6,8 +6,10 @@
 
 .container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 50px;
     margin: 100px;
 }
 
@@ -35,4 +37,11 @@
 .cell:hover {
     cursor: pointer;
     background-color: aquamarine;
+}
+
+#startBtn {
+    font-size: large;
+    padding: 20px 30px;
+    border-radius: 5px;
+    background-color: rgb(83, 252, 5);
 }
