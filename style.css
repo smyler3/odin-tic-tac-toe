@@ -1,0 +1,38 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 100px;
+}
+
+.board {
+    display: grid;
+    grid: repeat(3, 199px) / repeat(3, 199px);
+    gap: 1px;
+    justify-content: center;
+    align-content: center;
+    width: 601px;
+    height: 601px;
+    margin: 1px;
+    background-color: #000000;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 100px;
+    min-height: 100px;
+    font-size: xx-large;
+    background-color: aqua;
+}
+.cell:hover {
+    cursor: pointer;
+    background-color: aquamarine;
+}
