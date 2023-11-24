@@ -79,31 +79,42 @@ function Player(defaultName, symbol) {
     return { setName, getName, getSymbol };
 }
 
-function startGame() {
+const ticTacToe = (function() {
     const displayHandler = (function () {
+        // Create the visual board object
         function createDisplay() {
             const container = document.querySelector(".container");
 
             const board = document.createElement("div");
             board.classList.add("board");
 
-            for (let i = 0; i < gameBoard.getRows() * gameBoard.getCols(); i++) {
-                let cell = document.createElement("span");
-                cell.classList.add("cell");
-                cell.addEventListener("click", () => {
-                    cell.textContent = gameHandler.activePlayer.getSymbol;
-                });
-                board.appendChild(cell);
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                for (let j = 0; j < gameBoard.getCols(); j++) {
+                    let cell = document.createElement("span");
+                    cell.classList.add("cell");
+                    cell.setAttribute("data-row", i);
+                    cell.setAttribute("data-col", j);
+                    cell.addEventListener("click", (e) => {
+                        // TODO: Check e.target points to cell
+                        ticTacToe.makeMove(e.target);
+                    });
+                    board.appendChild(cell);
+                }
             }
             
             container.prepend(board);
         }
 
-        return { createDisplay };
+        // Visually mark the selected cell
+        function markCell(cell) {
+            cell.textContent = gameHandler.activePlayer.getSymbol;
+        }
+
+        return { createDisplay, markCell };
     })();
 
     /*
-     * IIDE game logic handler
+     * IIFE game logic handler
      */
     const gameHandler = (function() {
         const playerOne = Player("Player1", 1);
@@ -111,21 +122,18 @@ function startGame() {
         let activePlayer = playerOne;
         let moveRow = null;
         let moveCol = null;
-
-        displayHandler.createDisplay();
     
         // Continually loop through rounds of gameplay until a winner is found
-        while (true) {
-            startRoundMessage();
-            takeTurn();
-            if (checkEnd()) {
-                // End the game
-                break;
+        function takeTurn(row, col) {
+            moveRow = row;
+            moveCol = col;
+
+            if (checkMoveValid()) {
+                // Mark the cell
+                // gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
+                return true;
             }
-            else {
-                // Play another round
-                switchActivePlayer();
-            }
+            return false;
         }
     
         // Print start round message
@@ -134,37 +142,16 @@ function startGame() {
             gameBoard.printBoard();
         }
     
-        // Accept player input, validate, and play that move
-        function takeTurn() {
-            while (true) {
-                // Wait for input
-                let move = prompt("Please enter your move co-ords (x y): ");
-                // Extract the move information
-                [moveRow, moveCol] = move.split(" ").map(Number);
-    
-                if (checkMoveValid()) {
-                    // Mark the cell
-                    gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
-                    break;
-                }
-                else {
-                    // Request input again
-                    console.log("Invalid Input!");
-                    continue;
+        // Check if the move is valid
+        function checkMoveValid() {
+            // Input is valid
+            if ((moveRow > -1) && (moveRow < gameBoard.getRows()) && (moveCol > -1) && (moveCol < gameBoard.getCols())) {
+                // Cell is free
+                if (gameBoard.getBoard()[moveRow][moveCol].getValue() === 0) {
+                    return true;
                 }
             }
-    
-            // Check if the move is valid
-            function checkMoveValid() {
-                // Input is valid
-                if ((moveRow > -1) && (moveRow < gameBoard.getRows()) && (moveCol > -1) && (moveCol < gameBoard.getCols())) {
-                    // Cell is free
-                    if (gameBoard.getBoard()[moveRow][moveCol].getValue() === 0) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+            return false;
         }
     
         // Checks if the game has ended
@@ -255,9 +242,36 @@ function startGame() {
             activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
         }
     })(); 
-} 
+
+    // Handle all logic for starting the game
+    function startGame() {
+        gameHandler.startRoundMessage();
+        displayHandler.createDisplay();
+    }
+
+    // Handle all logic for when the player selects a cell
+    function makeMove(cell) {
+        if (gameHandler.takeTurn(cell.getAttribute("data-row"), cell.getAttribute("data-row"))) {
+            // cell.textContent = gameHandler.activePlayer.getSymbol;
+            displayHandler.markCell(cell);
+            if (gameHandler.checkEnd()) {
+                // End the game
+            }
+            else {
+                // Play another round
+                endRound();
+            }
+        }
+    }
+
+    // Handle all logic for ending current round
+    function endRound() {
+        gameHandler.switchActivePlayer();
+        gameHandler.startRoundMessage();
+    }
+})(); 
 
 const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
-    startBtn.addEventListener("click", startGame());
+    startBtn.addEventListener("click", ticTacToe.startGame());
 })();
