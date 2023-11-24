@@ -121,7 +121,6 @@ const ticTacToe = (function() {
             const cells = document.querySelectorAll(".cell");
 
             for (let cell of cells) {
-                console.log(cell);
                 cell.removeEventListener("click", checkCell);
             }
         }
@@ -148,7 +147,6 @@ const ticTacToe = (function() {
         function takeTurn(row, col) {
             moveRow = row;
             moveCol = col;
-            console.log(row, moveRow, col, moveCol);
 
             if (checkMoveValid()) {
                 // Mark the cell
@@ -176,88 +174,71 @@ const ticTacToe = (function() {
             return false;
         }
     
-        // Checks if the game has ended
-        function checkEnd() {
-            // Winner Found
-            if (checkWinner()) {
-                endGameMessage(activePlayer);
-                return true;
-            }
-            // Draw Found
-            else if (checkDraw()) {
-                endGameMessage();
-                return true;
-            }
-            // Game Continues
-            else {
-                return false;
-            }
-    
-            // Check for a win
-            function checkWinner() {
-                // Winner Logic
-                let winner = null;
-                // Check rows
-                for (let i = 0; i < gameBoard.getRows(); i++) {
-                    winner = true;
-                    for (let j = 0; j < gameBoard.getCols(); j++) {
-                        if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
-                            winner = false;
-                            break;
-                        }
-                    }
-                    if (winner) {
-                        return true;
-                    }
-                }
-    
-                // Check columns
+        // Check for a win
+        function checkWinner() {
+            // Winner Logic
+            let winner = null;
+            // Check rows
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                winner = true;
                 for (let j = 0; j < gameBoard.getCols(); j++) {
-                    winner = true;
-                    for (let i = 0; i < gameBoard.getRows(); i++) {
-                        if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
-                            winner = false;
-                            break;
-                        }
-                    }
-                    if (winner) {
-                        return true;
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
                     }
                 }
-    
-                // Check diagonals
-                if (gameBoard.getBoard()[1][1].getValue() !== activePlayer.getSymbol()) {
-                    winner = false;
-                }
-                else if (gameBoard.getBoard()[0][0].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][2].getValue() === activePlayer.getSymbol()) {
+                if (winner) {
                     return true;
                 }
-                else if (gameBoard.getBoard()[0][2].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][0].getValue() === activePlayer.getSymbol()) {
-                    return true;
-                }
-    
-                return winner;
             }
-    
-            // Checks for a draw
-            function checkDraw() {
-                // If every cell is non-zero and there are no wins, we have a draw
+
+            // Check columns
+            for (let j = 0; j < gameBoard.getCols(); j++) {
+                winner = true;
                 for (let i = 0; i < gameBoard.getRows(); i++) {
-                    for (let j = 0; j < gameBoard.getCols(); j++) {
-                        if (gameBoard.getBoard()[i][j].getValue()  === 0) {
-                            return false;
-                        }
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
                     }
                 }
+                if (winner) {
+                    return true;
+                }
+            }
+
+            // Check diagonals
+            if (gameBoard.getBoard()[1][1].getValue() !== activePlayer.getSymbol()) {
+                winner = false;
+            }
+            else if (gameBoard.getBoard()[0][0].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][2].getValue() === activePlayer.getSymbol()) {
                 return true;
             }
-    
-            // Prints the end of game message
-            function endGameMessage(victor = null) {
-                console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
-                console.log(gameBoard.printBoard());
-            } 
+            else if (gameBoard.getBoard()[0][2].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][0].getValue() === activePlayer.getSymbol()) {
+                return true;
+            }
+
+            return winner;
         }
+
+        // Checks for a draw
+        function checkDraw() {
+            // If every cell is non-zero and there are no wins, we have a draw
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                for (let j = 0; j < gameBoard.getCols(); j++) {
+                    if (gameBoard.getBoard()[i][j].getValue()  === 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Prints the end of game message
+        function endGameMessage(victor = null) {
+            console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
+            console.log(gameBoard.printBoard());
+        } 
+        // }
     
         // Switch the active player
         function switchActivePlayer() {
@@ -268,7 +249,7 @@ const ticTacToe = (function() {
             return activePlayer;
         }
 
-        return { startRoundMessage, takeTurn, checkEnd, switchActivePlayer, getActivePlayer }
+        return { startRoundMessage, takeTurn, checkWinner, checkDraw, endGameMessage, switchActivePlayer, getActivePlayer }
     })(); 
 
     // Handle all logic for starting the game
@@ -281,9 +262,17 @@ const ticTacToe = (function() {
     function makeMove(cell) {
         if (gameHandler.takeTurn(cell.getAttribute("data-row"), cell.getAttribute("data-col"))) {
             displayHandler.markCell(cell);
-            if (gameHandler.checkEnd()) {
-                // End the game
+            // End the game and display the winner
+            if (gameHandler.checkWinner()) {
+                gameHandler.endGameMessage(gameHandler.getActivePlayer());
                 displayHandler.freezeBoard();
+                displayHandler.createEndScreen(gameHandler.getActivePlayer());
+            }
+            // End the game and display a draw
+            else if (gameHandler.checkDraw()) {
+                gameHandler.endGameMessage();
+                displayHandler.freezeBoard();
+                displayHandler.createEndScreen();
             }
             else {
                 // Play another round
