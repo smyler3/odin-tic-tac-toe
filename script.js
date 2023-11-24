@@ -87,14 +87,19 @@ const ticTacToe = (function() {
      * IIFE factory for the object handling all display rendering logic
      */
     const displayHandler = (function () {
+        let header = undefined;
         // Attempts to make a move on selected cell when clicked
         const checkCell = (e) => {
             ticTacToe.makeMove(e.target);
         }
 
         // Create the visual board object
-        function createBoard() {
+        function createGameDisplay() {
             const container = document.querySelector(".container");
+
+            // Creating info header
+            header = document.createElement("div");
+            header.classList.add("header");
 
             // Creating board
             const board = document.createElement("div");
@@ -111,9 +116,10 @@ const ticTacToe = (function() {
                     board.appendChild(cell);
                 }
             }
-            
-            // Add board to top of screen
-            container.prepend(board);
+
+            // Adding new elements
+            container.append(header);
+            container.append(board);
         }
 
         // Removes event listeners from all cells
@@ -130,15 +136,23 @@ const ticTacToe = (function() {
             cell.textContent = gameHandler.getActivePlayer().getSymbol();
         }
 
-        return { createBoard, freezeBoard, markCell };
+        function displayActivePlayer() {
+            header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
+        }
+
+        function displayWinner(victor = null) {
+            header.textContent = "Game Result: " + (victor ? (victor.getName() + " Wins!") : "Draw!");
+        }
+
+        return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayWinner };
     })();
 
     /*
      * IIFE factory for the object handling all game logic
      */
     const gameHandler = (function() {
-        const playerOne = Player("Player1", 1);
-        const playerTwo = Player("Player2", 2);
+        const playerOne = Player("Player1", "O");
+        const playerTwo = Player("Player2", "X");
         let activePlayer = playerOne;
         let moveRow = null;
         let moveCol = null;
@@ -255,7 +269,8 @@ const ticTacToe = (function() {
     // Handle all logic for starting the game
     function startGame() {
         gameHandler.startRoundMessage();
-        displayHandler.createBoard();
+        displayHandler.createGameDisplay();
+        displayHandler.displayActivePlayer();
     }
 
     // Handle all logic for when the player selects a cell
@@ -266,13 +281,13 @@ const ticTacToe = (function() {
             if (gameHandler.checkWinner()) {
                 gameHandler.endGameMessage(gameHandler.getActivePlayer());
                 displayHandler.freezeBoard();
-                displayHandler.createEndScreen(gameHandler.getActivePlayer());
+                displayHandler.displayWinner(gameHandler.getActivePlayer());
             }
             // End the game and display a draw
             else if (gameHandler.checkDraw()) {
                 gameHandler.endGameMessage();
                 displayHandler.freezeBoard();
-                displayHandler.createEndScreen();
+                displayHandler.displayWinner();
             }
             else {
                 // Play another round
@@ -285,16 +300,16 @@ const ticTacToe = (function() {
     function endRound() {
         gameHandler.switchActivePlayer();
         gameHandler.startRoundMessage();
+        displayHandler.displayActivePlayer();
     }
 
     return { startGame, makeMove }
 })(); 
-
 
 /*
  * IIFE factory for the start game button
  */
 const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
-    startBtn.addEventListener("click", ticTacToe.startGame());
+    startBtn.addEventListener("click", ticTacToe.startGame);
 })();
