@@ -91,7 +91,9 @@ const ticTacToe = (function() {
         const screen = document.querySelector(".start-screen");
         const startBtn = document.getElementById("startBtn");
         const player1Card = document.getElementById("p1-card");
-        const player2Card = document.getElementById("p1-card");
+        const player2Card = document.getElementById("p2-card");
+        const active = "active-player";
+        const winner = "winning-player";
 
         // Attempts to make a move on selected cell when clicked
         const checkCell = (e) => {
@@ -116,7 +118,7 @@ const ticTacToe = (function() {
                     field.remove();
 
                     // Adding current symbol logo
-                    symbol.textContent = "X";
+                    symbol.textContent = (i === 0) ? "O" : "X";
                     symbol.classList.add("player-symbol");
                     card.append(symbol);
                 }
@@ -143,18 +145,31 @@ const ticTacToe = (function() {
                 screen.append(board);
             }
 
-            function createRestartBtn() {
+            /*
+            * IIFE factory for the restart game button
+            */
+            const restartButton = (function() {
                 const restartBtn = document.createElement("button");
 
-                restartBtn.textContent = "Restart";
-                restartBtn.setAttribute("id", "restartBtn");
+                // Creates a restart button
+                function addRestartBtn() {
+                    restartBtn.textContent = "Restart";
+                    restartBtn.setAttribute("id", "restartBtn");
 
-                screen.append(restartBtn);
-            }
+                    screen.append(restartBtn);
+                }
+
+                restartBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    ticTacToe.restartGame();
+                });
+
+                return { addRestartBtn };
+            })();
 
             adjustPlayerCards();
             createBoard();
-            createRestartBtn();
+            restartButton.addRestartBtn();
             startBtn.remove();
         }
 
@@ -174,11 +189,13 @@ const ticTacToe = (function() {
 
         // Visually display current player
         function displayActivePlayer(firstTurn = false) {
-            console.log(player1Card);
-            player1Card.classList.toggle("active-player");
+
+            player1Card.classList.toggle(active);
             // Player 1 always goes first 
             if (!firstTurn) {
-                player2Card.classList.toggle("active-player");
+                player2Card.classList.toggle(active);
+                console.log(player1Card.classList);
+                console.log(player2Card.classList);
             }
 
             header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
@@ -187,6 +204,20 @@ const ticTacToe = (function() {
         // Visually display game outcome
         function displayOutcome(victor = null) {
             header.textContent = "Game Result: " + (victor ? (victor.getName() + " Wins!") : "Draw!");
+
+            // Display winner on victory
+            if (victor) {
+                if (player1Card.classList.contains(active)) {
+                    player1Card.classList.add(winner);
+                    return
+                }
+                player2Card.classList.add(winner);
+                return
+            }
+
+            // Remove active for draws
+            player1Card.classList.remove(active);
+            player2Card.classList.remove(active);
         }
 
         return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayOutcome };
@@ -312,7 +343,6 @@ const ticTacToe = (function() {
 
     // Handle all logic for starting the game
     function startGame() {
-        console.log("here");
         gameHandler.startRoundMessage();
         displayHandler.displayActivePlayer(true);
         displayHandler.createGameDisplay();
@@ -358,7 +388,6 @@ const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
     startBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log("Start");
         ticTacToe.startGame();
     });
 })();
