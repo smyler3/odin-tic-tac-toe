@@ -1,5 +1,5 @@
 /*
-* Represents the gameboard being played on
+* IIFE Factory representing the gameboard being played on
 */
 const gameBoard = (function() {
     const rows = 3;
@@ -79,53 +79,97 @@ function Player(defaultName, symbol) {
     return { setName, getName, getSymbol };
 }
 
-function startGame() {
+/*
+ * IIFE factory for the object handling all ticTacToe Logic by syncing game and display function
+ */
+const ticTacToe = (function() {
+    /*
+     * IIFE factory for the object handling all display rendering logic
+     */
     const displayHandler = (function () {
-        function createDisplay() {
+        let header = undefined;
+        // Attempts to make a move on selected cell when clicked
+        const checkCell = (e) => {
+            ticTacToe.makeMove(e.target);
+        }
+
+        // Create the visual board object
+        function createGameDisplay() {
             const container = document.querySelector(".container");
 
+            // Creating info header
+            header = document.createElement("div");
+            header.classList.add("header");
+
+            // Creating board
             const board = document.createElement("div");
             board.classList.add("board");
 
-            for (let i = 0; i < gameBoard.getRows() * gameBoard.getCols(); i++) {
-                let cell = document.createElement("span");
-                cell.classList.add("cell");
-                cell.addEventListener("click", () => {
-                    cell.textContent = gameHandler.activePlayer.getSymbol;
-                });
-                board.appendChild(cell);
+            // Creating cells
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                for (let j = 0; j < gameBoard.getCols(); j++) {
+                    let cell = document.createElement("span");
+                    cell.classList.add("cell");
+                    cell.setAttribute("data-row", i);
+                    cell.setAttribute("data-col", j);
+                    cell.addEventListener("click", checkCell);
+                    board.appendChild(cell);
+                }
             }
-            
-            container.prepend(board);
+
+            // Adding new elements
+            container.append(header);
+            container.append(board);
         }
 
-        return { createDisplay };
+        // Removes event listeners from all cells
+        function freezeBoard() {
+            const cells = document.querySelectorAll(".cell");
+
+            for (let cell of cells) {
+                cell.removeEventListener("click", checkCell);
+            }
+        }
+
+        // Visually mark the selected cell
+        function markCell(cell) {
+            cell.textContent = gameHandler.getActivePlayer().getSymbol();
+        }
+
+        // Visually display current player
+        function displayActivePlayer() {
+            header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
+        }
+
+        // Visually display game outcome
+        function displayOutcome(victor = null) {
+            header.textContent = "Game Result: " + (victor ? (victor.getName() + " Wins!") : "Draw!");
+        }
+
+        return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayOutcome };
     })();
 
     /*
-     * IIDE game logic handler
+     * IIFE factory for the object handling all game logic
      */
     const gameHandler = (function() {
-        const playerOne = Player("Player1", 1);
-        const playerTwo = Player("Player2", 2);
+        const playerOne = Player("Player1", "O");
+        const playerTwo = Player("Player2", "X");
         let activePlayer = playerOne;
         let moveRow = null;
         let moveCol = null;
-
-        displayHandler.createDisplay();
     
         // Continually loop through rounds of gameplay until a winner is found
-        while (true) {
-            startRoundMessage();
-            takeTurn();
-            if (checkEnd()) {
-                // End the game
-                break;
+        function takeTurn(row, col) {
+            moveRow = row;
+            moveCol = col;
+
+            if (checkMoveValid()) {
+                // Mark the cell
+                gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
+                return true;
             }
-            else {
-                // Play another round
-                switchActivePlayer();
-            }
+            return false;
         }
     
         // Print start round message
@@ -134,130 +178,139 @@ function startGame() {
             gameBoard.printBoard();
         }
     
-        // Accept player input, validate, and play that move
-        function takeTurn() {
-            while (true) {
-                // Wait for input
-                let move = prompt("Please enter your move co-ords (x y): ");
-                // Extract the move information
-                [moveRow, moveCol] = move.split(" ").map(Number);
-    
-                if (checkMoveValid()) {
-                    // Mark the cell
-                    gameBoard.getBoard()[moveRow][moveCol].setValue(activePlayer.getSymbol());
-                    break;
-                }
-                else {
-                    // Request input again
-                    console.log("Invalid Input!");
-                    continue;
+        // Check if the move is valid
+        function checkMoveValid() {
+            // Input is valid
+            if ((moveRow > -1) && (moveRow < gameBoard.getRows()) && (moveCol > -1) && (moveCol < gameBoard.getCols())) {
+                // Cell is free
+                if (gameBoard.getBoard()[moveRow][moveCol].getValue() === 0) {
+                    return true;
                 }
             }
-    
-            // Check if the move is valid
-            function checkMoveValid() {
-                // Input is valid
-                if ((moveRow > -1) && (moveRow < gameBoard.getRows()) && (moveCol > -1) && (moveCol < gameBoard.getCols())) {
-                    // Cell is free
-                    if (gameBoard.getBoard()[moveRow][moveCol].getValue() === 0) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+            return false;
         }
     
-        // Checks if the game has ended
-        function checkEnd() {
-            // Winner Found
-            if (checkWinner()) {
-                endGameMessage(activePlayer);
-                return true;
-            }
-            // Draw Found
-            else if (checkDraw()) {
-                endGameMessage();
-                return true;
-            }
-            // Game Continues
-            else {
-                return false;
-            }
-    
-            // Check for a win
-            function checkWinner() {
-                // Winner Logic
-                let winner = null;
-                // Check rows
-                for (let i = 0; i < gameBoard.getRows(); i++) {
-                    winner = true;
-                    for (let j = 0; j < gameBoard.getCols(); j++) {
-                        if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
-                            winner = false;
-                            break;
-                        }
-                    }
-                    if (winner) {
-                        return true;
-                    }
-                }
-    
-                // Check columns
+        // Check for a win
+        function checkWinner() {
+            // Winner Logic
+            let winner = null;
+            // Check rows
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                winner = true;
                 for (let j = 0; j < gameBoard.getCols(); j++) {
-                    winner = true;
-                    for (let i = 0; i < gameBoard.getRows(); i++) {
-                        if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
-                            winner = false;
-                            break;
-                        }
-                    }
-                    if (winner) {
-                        return true;
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
                     }
                 }
-    
-                // Check diagonals
-                if (gameBoard.getBoard()[1][1].getValue() !== activePlayer.getSymbol()) {
-                    winner = false;
-                }
-                else if (gameBoard.getBoard()[0][0].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][2].getValue() === activePlayer.getSymbol()) {
+                if (winner) {
                     return true;
                 }
-                else if (gameBoard.getBoard()[0][2].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][0].getValue() === activePlayer.getSymbol()) {
-                    return true;
-                }
-    
-                return winner;
             }
-    
-            // Checks for a draw
-            function checkDraw() {
-                // If every cell is non-zero and there are no wins, we have a draw
+
+            // Check columns
+            for (let j = 0; j < gameBoard.getCols(); j++) {
+                winner = true;
                 for (let i = 0; i < gameBoard.getRows(); i++) {
-                    for (let j = 0; j < gameBoard.getCols(); j++) {
-                        if (gameBoard.getBoard()[i][j].getValue()  === 0) {
-                            return false;
-                        }
+                    if (gameBoard.getBoard()[i][j].getValue() !== activePlayer.getSymbol()) {
+                        winner = false;
+                        break;
                     }
                 }
+                if (winner) {
+                    return true;
+                }
+            }
+
+            // Check diagonals
+            if (gameBoard.getBoard()[1][1].getValue() !== activePlayer.getSymbol()) {
+                winner = false;
+            }
+            else if (gameBoard.getBoard()[0][0].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][2].getValue() === activePlayer.getSymbol()) {
                 return true;
             }
-    
-            // Prints the end of game message
-            function endGameMessage(victor = null) {
-                console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
-                console.log(gameBoard.printBoard());
-            } 
+            else if (gameBoard.getBoard()[0][2].getValue() === activePlayer.getSymbol() && gameBoard.getBoard()[2][0].getValue() === activePlayer.getSymbol()) {
+                return true;
+            }
+
+            return winner;
         }
+
+        // Checks for a draw
+        function checkDraw() {
+            // If every cell is non-zero and there are no wins, we have a draw
+            for (let i = 0; i < gameBoard.getRows(); i++) {
+                for (let j = 0; j < gameBoard.getCols(); j++) {
+                    if (gameBoard.getBoard()[i][j].getValue()  === 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Prints the end of game message
+        function endGameMessage(victor = null) {
+            console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
+            console.log(gameBoard.printBoard());
+        } 
     
         // Switch the active player
         function switchActivePlayer() {
             activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
         }
-    })(); 
-} 
 
+        function getActivePlayer() {
+            return activePlayer;
+        }
+
+        return { startRoundMessage, takeTurn, checkWinner, checkDraw, endGameMessage, switchActivePlayer, getActivePlayer }
+    })(); 
+
+    // Handle all logic for starting the game
+    function startGame() {
+        gameHandler.startRoundMessage();
+        displayHandler.createGameDisplay();
+        displayHandler.displayActivePlayer();
+    }
+
+    // Handle all logic for when the player selects a cell
+    function makeMove(cell) {
+        if (gameHandler.takeTurn(cell.getAttribute("data-row"), cell.getAttribute("data-col"))) {
+            displayHandler.markCell(cell);
+            // End the game and display the winner
+            if (gameHandler.checkWinner()) {
+                gameHandler.endGameMessage(gameHandler.getActivePlayer());
+                displayHandler.freezeBoard();
+                displayHandler.displayOutcome(gameHandler.getActivePlayer());
+            }
+            // End the game and display a draw
+            else if (gameHandler.checkDraw()) {
+                gameHandler.endGameMessage();
+                displayHandler.freezeBoard();
+                displayHandler.displayOutcome();
+            }
+            else {
+                // Play another round
+                endRound();
+            }
+        }
+    }
+
+    // Handle all logic for ending current round
+    function endRound() {
+        gameHandler.switchActivePlayer();
+        gameHandler.startRoundMessage();
+        displayHandler.displayActivePlayer();
+    }
+
+    return { startGame, makeMove }
+})(); 
+
+/*
+ * IIFE factory for the start game button
+ */
 const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
-    startBtn.addEventListener("click", startGame());
+    startBtn.addEventListener("click", ticTacToe.startGame);
 })();
