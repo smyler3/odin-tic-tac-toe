@@ -57,7 +57,7 @@ body {
     justify-items: center;
     align-items: center;
     row-gap: 20px;
-    height: max(600px, 80%);
+    height: max(400px, 80%);
     width: max(800px, 50%);
     padding: 20px;
     border: 2px solid #000000;
@@ -74,8 +74,9 @@ body {
 
 .start-screen {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: start;
     height: 100%;
     width: 100%;
 }
@@ -83,10 +84,9 @@ body {
 #player-info-form {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     gap: 20px;
-    height: 100%;
     width: 100%;
 }
 
@@ -167,6 +167,10 @@ body {
  * ---------------------------------------------------------------------------------------
  */
 
+.game-screen {
+
+}
+
 .board {
     display: grid;
     grid: repeat(3, 199px) / repeat(3, 199px);
@@ -192,3 +196,7 @@ body {
     cursor: pointer;
     background-color: aquamarine;
 }
+
+/* .hidden {
+    display: none;
+} */

@@ -95,31 +95,66 @@ const ticTacToe = (function() {
 
         // Create the visual board object
         function createGameDisplay() {
-            const container = document.querySelector(".container");
+            const screen = document.querySelector(".start-screen");
 
-            // Creating info header
-            header = document.createElement("div");
-            header.classList.add("header");
+            function adjustPlayerCards() {
+                for (let i = 0; i < 2; i++) {
+                    let card = document.getElementById("p" + (i + 1) + "-card");
+                    let title = document.getElementById("p" + (i + 1) + "-title");
+                    let field = document.getElementById("p" + (i + 1) + "-field");
+                    let newName = (document.getElementsByName("p" + (i + 1) + "-name")).value;
+                    let symbol = document.createElement("div");
 
-            // Creating board
-            const board = document.createElement("div");
-            board.classList.add("board");
+                    // Changing name to input if available
+                    title.textContent = (newName === "") ? title.textContent : newName;
 
-            // Creating cells
-            for (let i = 0; i < gameBoard.getRows(); i++) {
-                for (let j = 0; j < gameBoard.getCols(); j++) {
-                    let cell = document.createElement("span");
-                    cell.classList.add("cell");
-                    cell.setAttribute("data-row", i);
-                    cell.setAttribute("data-col", j);
-                    cell.addEventListener("click", checkCell);
-                    board.appendChild(cell);
+                    // Removing name field
+                    card.remove(field);
+
+                    // Adding current symbol logo
+                    symbol.textContent = "X";
+                    card.append(symbol);
                 }
             }
 
-            // Adding new elements
-            container.append(header);
-            container.append(board);
+            // Creates the game board
+            function createBoard() {
+                // Creating board
+                const board = document.createElement("div");
+                board.classList.add("board");
+
+                // Creating cells
+                for (let i = 0; i < gameBoard.getRows(); i++) {
+                    for (let j = 0; j < gameBoard.getCols(); j++) {
+                        let cell = document.createElement("span");
+                        cell.classList.add("cell");
+                        cell.setAttribute("data-row", i);
+                        cell.setAttribute("data-col", j);
+                        cell.addEventListener("click", checkCell);
+                        board.appendChild(cell);
+                    }
+                }
+
+                screen.append(board);
+            }
+
+            function createRestartBtn() {
+                const restartBtn = document.createElement("button");
+
+                restartBtn.textContent = "Restart";
+                restartBtn.setAttribute("id", "restartBtn");
+
+                screen.append(restartBtn);
+            }
+
+            adjustPlayerCards();
+            createBoard();
+            createRestartBtn();
+            // // Not really a function
+            // function switchScreenToGame() {
+            //     screen.classList.toggle("start-screen");
+            //     screen.classList.toggle("game-screen");
+            // }
         }
 
         // Removes event listeners from all cells
@@ -269,6 +304,7 @@ const ticTacToe = (function() {
 
     // Handle all logic for starting the game
     function startGame() {
+        console.log("here");
         gameHandler.startRoundMessage();
         displayHandler.createGameDisplay();
         displayHandler.displayActivePlayer();
@@ -312,5 +348,9 @@ const ticTacToe = (function() {
  */
 const startButton = (function() {
     const startBtn = document.querySelector("#startBtn");
-    startBtn.addEventListener("click", ticTacToe.startGame);
+    startBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        console.log("Start");
+        ticTacToe.startGame();
+    });
 })();
