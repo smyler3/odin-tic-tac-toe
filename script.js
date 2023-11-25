@@ -87,7 +87,12 @@ const ticTacToe = (function() {
      * IIFE factory for the object handling all display rendering logic
      */
     const displayHandler = (function () {
-        let header = undefined;
+        const header = document.querySelector(".header");
+        const screen = document.querySelector(".start-screen");
+        const startBtn = document.getElementById("startBtn");
+        const player1Card = document.getElementById("p1-card");
+        const player2Card = document.getElementById("p1-card");
+
         // Attempts to make a move on selected cell when clicked
         const checkCell = (e) => {
             ticTacToe.makeMove(e.target);
@@ -95,24 +100,24 @@ const ticTacToe = (function() {
 
         // Create the visual board object
         function createGameDisplay() {
-            const screen = document.querySelector(".start-screen");
-
+            // Removes form fields and replaces them with current name and symbol
             function adjustPlayerCards() {
                 for (let i = 0; i < 2; i++) {
                     let card = document.getElementById("p" + (i + 1) + "-card");
                     let title = document.getElementById("p" + (i + 1) + "-title");
                     let field = document.getElementById("p" + (i + 1) + "-field");
-                    let newName = (document.getElementsByName("p" + (i + 1) + "-name")).value;
+                    let newName = (document.getElementById("p" + (i + 1) + "-name")).value;
                     let symbol = document.createElement("div");
 
                     // Changing name to input if available
                     title.textContent = (newName === "") ? title.textContent : newName;
 
                     // Removing name field
-                    card.remove(field);
+                    field.remove();
 
                     // Adding current symbol logo
                     symbol.textContent = "X";
+                    symbol.classList.add("player-symbol");
                     card.append(symbol);
                 }
             }
@@ -150,11 +155,7 @@ const ticTacToe = (function() {
             adjustPlayerCards();
             createBoard();
             createRestartBtn();
-            // // Not really a function
-            // function switchScreenToGame() {
-            //     screen.classList.toggle("start-screen");
-            //     screen.classList.toggle("game-screen");
-            // }
+            startBtn.remove();
         }
 
         // Removes event listeners from all cells
@@ -172,7 +173,14 @@ const ticTacToe = (function() {
         }
 
         // Visually display current player
-        function displayActivePlayer() {
+        function displayActivePlayer(firstTurn = false) {
+            console.log(player1Card);
+            player1Card.classList.toggle("active-player");
+            // Player 1 always goes first 
+            if (!firstTurn) {
+                player2Card.classList.toggle("active-player");
+            }
+
             header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
         }
 
@@ -306,8 +314,8 @@ const ticTacToe = (function() {
     function startGame() {
         console.log("here");
         gameHandler.startRoundMessage();
+        displayHandler.displayActivePlayer(true);
         displayHandler.createGameDisplay();
-        displayHandler.displayActivePlayer();
     }
 
     // Handle all logic for when the player selects a cell

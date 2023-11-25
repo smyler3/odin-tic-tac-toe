@@ -1,3 +1,8 @@
+:root {
+    --cell-size: 140px;
+    --grid-size: calc(3 + (var(--cell-size) * 3));
+}
+
 /*
  * ---------------------------------------------------------------------------------------
  * General Form Styling
@@ -47,6 +52,7 @@ body {
     padding: 20px 50px;
     min-width: 500px;
     max-width: 500px;
+    border: 2px solid #000000;
     border-radius: 20px;
     background-color: #ffffff;
 }
@@ -76,7 +82,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: start;
+    align-items: center;
+    gap: 20px;
     height: 100%;
     width: 100%;
 }
@@ -99,9 +106,12 @@ body {
 .name-section {
     display: grid;
     grid-template-rows: repeat(auto-fit, minmax(20px, 1fr));
+    justify-items: center;
     align-items: center;
     gap: 10px;
     padding: 10px 20px;
+    height: 100px;
+    width: 300px;
     border: 2px solid #000000;
     border-radius: 20px;
 }
@@ -129,10 +139,15 @@ body {
 }
 
 .player-title {
-    text-align: center;
+
 }
 
-#startBtn {
+.player-symbol {
+    font-size: xx-large;
+}
+
+#startBtn,
+#restartBtn {
     padding: 15px 50px;
     border-radius: 10px;
     background-color: rgb(5, 252, 116);
@@ -150,7 +165,8 @@ body {
 .header,
 .board,
 .name-section,
-#startBtn {
+#startBtn,
+#restartBtn {
     box-shadow: 0px 10px 15px #00000030;
 }
 
@@ -158,7 +174,6 @@ body {
 #startBtn {
     font-size: large;
     font-weight: 500;
-    border: 2px solid #000000;
 }
 
 /*
@@ -171,14 +186,18 @@ body {
 
 }
 
+.active-player {
+    border-color: #09f071;
+}
+
 .board {
     display: grid;
-    grid: repeat(3, 199px) / repeat(3, 199px);
+    grid: repeat(3, var(--cell-size)) / repeat(3, var(--cell-size));
     gap: 1px;
     justify-content: center;
     align-content: center;
-    width: 601px;
-    height: 601px;
+    width: var(--grid-size);
+    height: var(--grid-size);
     margin: 1px;
     background-color: #000000;
 }
@@ -195,6 +214,10 @@ body {
 .cell:hover {
     cursor: pointer;
     background-color: aquamarine;
+}
+
+#restartBtn {
+
 }
 
 /* .hidden {
