@@ -8,8 +8,49 @@
     <script src="./script.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <button id="startBtn">Start Game</button>
+    <h1 class="title">Tic-Tac-Toe</h1>
+    <div class="game-container">
+        <div class="header">Enter Player Info and Press Start to Play</div>
+        <div class="start-screen">
+            <form id="player-info-form" action="">
+                <!-- Allows players to set their own names -->
+                <div class="name-container">
+                    <!-- Player 1 Name -->
+                    <span class="name-section">
+                        <h2 id="p1-name" class="player-title">Player 1</h2>
+                        <div class="name-field">
+                            <label class="name-field-label">Name:</label>
+                            <input class="name-field-input" type="text" name="p1name" maxlength="12" placeholder="Player 1">
+                        </div>
+                    </span>
+                    <!-- Player 2 Name -->
+                    <span class="name-section">
+                        <h2 id="p2-name" class="player-title">Player 2</h2>
+                        <div class="name-field">
+                            <label class="name-field-label">Name:</label>
+                            <input class="name-field-input" type="text" name="p2name" maxlength="12" placeholder="Player 2">
+                        </div>
+                    </span>
+                </div>
+                <!-- Allows players to set their own symbols
+                <div>
+                    <fieldset>
+                        <legend><h2>Symbols</h2></legend>
+                        <div>
+                            <div>
+                                <input type="radio" name="symbols" value="XO">
+                                <label for="">Player 1: X &nbsp;&nbsp;&nbsp;&nbsp; Player 2: O</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="symbols" value="XO">
+                                <label for="">Player 1: 1 &nbsp;&nbsp;&nbsp;&nbsp; Player 2: 2</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div> -->
+                <button id="startBtn">Start</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
