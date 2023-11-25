@@ -136,15 +136,17 @@ const ticTacToe = (function() {
             cell.textContent = gameHandler.getActivePlayer().getSymbol();
         }
 
+        // Visually display current player
         function displayActivePlayer() {
             header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
         }
 
-        function displayWinner(victor = null) {
+        // Visually display game outcome
+        function displayOutcome(victor = null) {
             header.textContent = "Game Result: " + (victor ? (victor.getName() + " Wins!") : "Draw!");
         }
 
-        return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayWinner };
+        return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayOutcome };
     })();
 
     /*
@@ -252,7 +254,6 @@ const ticTacToe = (function() {
             console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
             console.log(gameBoard.printBoard());
         } 
-        // }
     
         // Switch the active player
         function switchActivePlayer() {
@@ -281,13 +282,13 @@ const ticTacToe = (function() {
             if (gameHandler.checkWinner()) {
                 gameHandler.endGameMessage(gameHandler.getActivePlayer());
                 displayHandler.freezeBoard();
-                displayHandler.displayWinner(gameHandler.getActivePlayer());
+                displayHandler.displayOutcome(gameHandler.getActivePlayer());
             }
             // End the game and display a draw
             else if (gameHandler.checkDraw()) {
                 gameHandler.endGameMessage();
                 displayHandler.freezeBoard();
-                displayHandler.displayWinner();
+                displayHandler.displayOutcome();
             }
             else {
                 // Play another round
