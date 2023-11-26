@@ -26,6 +26,14 @@ const gameBoard = (function() {
         console.log(boardString);
     }
 
+    function wipeBoard() {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                board[i][j].setValue(0);
+            }
+        }
+    }
+
     function getRows() {
         return rows;
     }
@@ -38,7 +46,7 @@ const gameBoard = (function() {
         return board;
     }
 
-    return { getRows, getCols, printBoard, getBoard };
+    return { getRows, getCols, printBoard, wipeBoard, getBoard };
 })();
 
 /*
@@ -97,6 +105,7 @@ const ticTacToe = (function() {
         const player2Card = document.getElementById("p2-card");
         const active = "active-player";
         const winner = "winning-player";
+        let cells = undefined;
 
         // Attempts to make a move on selected cell when clicked
         const checkCell = (e) => {
@@ -146,6 +155,7 @@ const ticTacToe = (function() {
                 }
 
                 screen.append(board);
+                cells = document.querySelectorAll(".cell");
             }
 
             /*
@@ -178,10 +188,18 @@ const ticTacToe = (function() {
 
         // Removes event listeners from all cells
         function freezeBoard() {
-            const cells = document.querySelectorAll(".cell");
-
             for (let cell of cells) {
                 cell.removeEventListener("click", checkCell);
+            }
+        }
+
+        function wipeBoard() {
+            freezeBoard();
+
+            // Clear board and re-add event listeners
+            for (let cell of cells) {
+                cell.addEventListener("click", checkCell);
+                cell.textContent = "";
             }
         }
 
@@ -193,7 +211,6 @@ const ticTacToe = (function() {
 
         // Visually display current player
         function displayActivePlayer(firstTurn = false) {
-
             player1Card.classList.toggle(active);
             // Player 1 always goes first 
             if (!firstTurn) {
@@ -220,7 +237,15 @@ const ticTacToe = (function() {
             player2Card.classList.remove(active);
         }
 
-        return { createGameDisplay, freezeBoard, markCell, displayActivePlayer, displayOutcome };
+        // Removes winner status and restarts player 1 as active player
+        function resetPlayerStates() {
+            player1Card.classList.add(active);
+            player2Card.classList.remove(active);
+            player1Card.classList.remove(winner);
+            player2Card.classList.remove(winner);
+        }
+
+        return { createGameDisplay, freezeBoard, wipeBoard, markCell, displayActivePlayer, displayOutcome, resetPlayerStates };
     })();
 
     /*
@@ -378,7 +403,15 @@ const ticTacToe = (function() {
         displayHandler.displayActivePlayer();
     }
 
-    return { startGame, makeMove }
+    // Handle all logic for resetting the board
+    function restartGame() {
+        gameBoard.wipeBoard();
+        displayHandler.wipeBoard();
+
+        displayHandler.resetPlayerStates();
+    }
+
+    return { startGame, makeMove, restartGame }
 })(); 
 
 /*
