@@ -63,7 +63,7 @@ body {
 
 .game-container {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto;
     justify-items: center;
     align-items: center;
     row-gap: 20px;
@@ -82,7 +82,7 @@ body {
  * ---------------------------------------------------------------------------------------
  */
 
-.start-screen {
+.game-screen {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -104,7 +104,7 @@ body {
 .name-container {
     display: flex;
     justify-content: space-evenly;
-    width: 100%
+    width: 100%;
 }
 
 .name-section {
@@ -121,11 +121,13 @@ body {
     border-radius: 20px;
     background-color: var(--secondary);
 }
+
 /* Highlights the card if it's the players turn */
 .active-player {
     background-color: var(--primary);
     color: #000000;
 }
+
 /* Highlights the card if the player wins */
 .winning-player {
     border-color: #00ffe5;
@@ -160,10 +162,6 @@ body {
 }
 .name-field-input::placeholder {
     color: #afafaf;
-}
-
-.player-title {
-
 }
 
 .player-symbol {
@@ -226,11 +224,3 @@ body {
     cursor: pointer;
     background-color: #0da192;
 }
-
-#restartBtn {
-
-}
-
-/* .hidden {
-    display: none;
-} */

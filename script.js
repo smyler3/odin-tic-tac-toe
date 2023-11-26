@@ -99,7 +99,7 @@ const ticTacToe = (function() {
      * IIFE factory for the object handling all display rendering logic
      */
     const displayHandler = (function () {
-        const screen = document.querySelector(".start-screen");
+        const screen = document.querySelector(".game-screen");
         const startBtn = document.getElementById("startBtn");
         const player1Card = document.getElementById("p1-card");
         const player2Card = document.getElementById("p2-card");
@@ -215,8 +215,6 @@ const ticTacToe = (function() {
             // Player 1 always goes first 
             if (!firstTurn) {
                 player2Card.classList.toggle(active);
-                console.log(player1Card.classList);
-                console.log(player2Card.classList);
             }
         }
 
@@ -269,12 +267,6 @@ const ticTacToe = (function() {
                 return true;
             }
             return false;
-        }
-    
-        // Print start round message
-        function startRoundMessage() {
-            console.log("Current Player: " + activePlayer.getName());
-            gameBoard.printBoard();
         }
     
         // Check if the move is valid
@@ -347,12 +339,6 @@ const ticTacToe = (function() {
             }
             return true;
         }
-
-        // Prints the end of game message
-        function endGameMessage(victor = null) {
-            console.log("Game Over! Result: " + ((victor === null) ? "Draw" : (victor.getName() + " Wins" )));
-            console.log(gameBoard.printBoard());
-        } 
     
         // Switch the active player
         function switchActivePlayer() {
@@ -363,12 +349,11 @@ const ticTacToe = (function() {
             return activePlayer;
         }
 
-        return { startRoundMessage, takeTurn, checkWinner, checkDraw, endGameMessage, switchActivePlayer, getActivePlayer }
+        return { takeTurn, checkWinner, checkDraw, switchActivePlayer, getActivePlayer }
     })(); 
 
     // Handle all logic for starting the game
     function startGame() {
-        gameHandler.startRoundMessage();
         displayHandler.displayActivePlayer(true);
         displayHandler.createGameDisplay();
     }
@@ -379,13 +364,11 @@ const ticTacToe = (function() {
             displayHandler.markCell(cell);
             // End the game and display the winner
             if (gameHandler.checkWinner()) {
-                gameHandler.endGameMessage(gameHandler.getActivePlayer());
                 displayHandler.freezeBoard();
                 displayHandler.displayOutcome(gameHandler.getActivePlayer());
             }
             // End the game and display a draw
             else if (gameHandler.checkDraw()) {
-                gameHandler.endGameMessage();
                 displayHandler.freezeBoard();
                 displayHandler.displayOutcome();
             }
@@ -399,7 +382,6 @@ const ticTacToe = (function() {
     // Handle all logic for ending current round
     function endRound() {
         gameHandler.switchActivePlayer();
-        gameHandler.startRoundMessage();
         displayHandler.displayActivePlayer();
     }
 
