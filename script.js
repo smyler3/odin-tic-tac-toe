@@ -61,7 +61,7 @@ function Cell() {
 /*
  * Represents the players of the game
  */
-function Player(defaultName, symbol) {
+function Player(defaultName, symbol, colour) {
     let name = defaultName;
 
     function setName(newName) {
@@ -76,7 +76,11 @@ function Player(defaultName, symbol) {
         return symbol;
     }
 
-    return { setName, getName, getSymbol };
+    function getColour() {
+        return colour;
+    }
+
+    return { setName, getName, getSymbol, getColour };
 }
 
 /*
@@ -87,7 +91,6 @@ const ticTacToe = (function() {
      * IIFE factory for the object handling all display rendering logic
      */
     const displayHandler = (function () {
-        const header = document.querySelector(".header");
         const screen = document.querySelector(".start-screen");
         const startBtn = document.getElementById("startBtn");
         const player1Card = document.getElementById("p1-card");
@@ -185,6 +188,7 @@ const ticTacToe = (function() {
         // Visually mark the selected cell
         function markCell(cell) {
             cell.textContent = gameHandler.getActivePlayer().getSymbol();
+            cell.style.color = gameHandler.getActivePlayer().getColour();
         }
 
         // Visually display current player
@@ -197,14 +201,10 @@ const ticTacToe = (function() {
                 console.log(player1Card.classList);
                 console.log(player2Card.classList);
             }
-
-            header.textContent = "Current Active Player: " + gameHandler.getActivePlayer().getName();
         }
 
         // Visually display game outcome
         function displayOutcome(victor = null) {
-            header.textContent = "Game Result: " + (victor ? (victor.getName() + " Wins!") : "Draw!");
-
             // Display winner on victory
             if (victor) {
                 if (player1Card.classList.contains(active)) {
@@ -227,8 +227,8 @@ const ticTacToe = (function() {
      * IIFE factory for the object handling all game logic
      */
     const gameHandler = (function() {
-        const playerOne = Player("Player1", "O");
-        const playerTwo = Player("Player2", "X");
+        const playerOne = Player("Player1", "O", "#333333");
+        const playerTwo = Player("Player2", "X", "#d9d9d9")
         let activePlayer = playerOne;
         let moveRow = null;
         let moveCol = null;

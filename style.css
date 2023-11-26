@@ -61,19 +61,6 @@ body {
     color: var(--primary);
 }
 
-.header {
-    text-align: center;
-    padding: 20px 50px;
-    min-width: 710px;
-    max-width: 710px;
-    font-size: x-large;
-    font-weight: 900;
-    color: #14bdac;
-    border: 2px solid var(--tertiary);
-    border-radius: 20px;
-    background-color: var(--secondary);
-}
-
 .game-container {
     display: grid;
     grid-template-rows: auto 1fr;
