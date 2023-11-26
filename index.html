@@ -8,8 +8,32 @@
     <script src="./script.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <button id="startBtn">Start Game</button>
+    <h1 class="title">Tic-Tac-Toe</h1>
+    <div class="game-container">
+        <div class="game-screen">
+            <form id="player-info-form" action="#">
+                <!-- Allows players to set their own names -->
+                <div class="name-container">
+                    <!-- Player 1 Name -->
+                    <span id="p1-card" class="name-section" data-player="1">
+                        <h2 id="p1-title">Player 1</h2>
+                        <div id="p1-field"  class="name-field">
+                            <label class="name-field-label" for="player1-name">Name:</label>
+                            <input id="p1-name" class="name-field-input" type="text" maxlength="12" placeholder="Player 1">
+                        </div>
+                    </span>
+                    <!-- Player 2 Name -->
+                    <span id="p2-card" class="name-section" data-player="1">
+                        <h2 id="p2-title">Player 2</h2>
+                        <div id="p2-field" class="name-field">
+                            <label class="name-field-label" for="player2-name">Name:</label>
+                            <input id="p2-name" class="name-field-input" type="text" maxlength="12" placeholder="Player 2">
+                        </div>
+                    </span>
+                </div>
+                <button id="startBtn">Start</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
