@@ -130,8 +130,13 @@ body {
 
 /* Highlights the card if the player wins */
 .winning-player {
-    border-color: #00ffe5;
     color: #ffffff;
+    border-color: #ffffff;
+}
+
+.drawn-player {
+    border-color: var(--primary-darker);
+    color: var(--tertiary);
 }
 
 .name-field {
